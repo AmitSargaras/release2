@@ -1,1 +1,0 @@
-package com.integrosys.cms.ui.welcome;import com.integrosys.base.uiinfra.common.CommonForm;public class WelcomeForm extends CommonForm {}
