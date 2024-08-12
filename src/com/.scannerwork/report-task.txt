@@ -1,0 +1,7 @@
+organization=amitsargar
+projectKey=AmitSargaras_SONAR0708
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.56246
+dashboardUrl=https://sonarcloud.io/dashboard?id=AmitSargaras_SONAR0708
+ceTaskId=AZEw4kQ1Gn4pEHFLQJi_
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZEw4kQ1Gn4pEHFLQJi_
