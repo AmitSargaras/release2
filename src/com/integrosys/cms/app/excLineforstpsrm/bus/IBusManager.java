@@ -1,0 +1,15 @@
+package com.integrosys.cms.app.excLineforstpsrm.bus;
+
+import com.integrosys.base.businfra.search.SearchResult;
+import com.integrosys.base.businfra.transaction.TransactionException;
+import com.integrosys.base.businfra.transaction.TrxParameterException;
+import com.integrosys.base.techinfra.ejbsupport.ConcurrentUpdateException;
+
+public interface IBusManager {
+	SearchResult getAll() throws ExcLineForSTPSRMException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	IExcLineForSTPSRM create(IExcLineForSTPSRM item)throws ExcLineForSTPSRMException;
+	IExcLineForSTPSRM getById(long id) throws ExcLineForSTPSRMException,TrxParameterException,TransactionException;
+	IExcLineForSTPSRM update(IExcLineForSTPSRM item) throws ExcLineForSTPSRMException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	IExcLineForSTPSRM updateToWorkingCopy(IExcLineForSTPSRM workingCopy, IExcLineForSTPSRM imageCopy) throws ExcLineForSTPSRMException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	IExcLineForSTPSRM deleteToWorkingCopy(IExcLineForSTPSRM workingCopy, IExcLineForSTPSRM imageCopy) throws ExcLineForSTPSRMException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+}

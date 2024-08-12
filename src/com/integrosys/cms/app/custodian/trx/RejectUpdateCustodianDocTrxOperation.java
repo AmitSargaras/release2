@@ -1,0 +1,51 @@
+/*
+ * Copyright Integro Technologies Pte Ltd
+ * $Header: /home/cms2/cvsroot/cms2/src/com/integrosys/cms/app/custodian/trx/RejectUpdateCustodianDocTrxOperation.java,v 1.1 2003/07/10 10:20:36 ravi Exp $
+ */
+package com.integrosys.cms.app.custodian.trx;
+
+//ofa
+import com.integrosys.base.businfra.transaction.ITrxResult;
+import com.integrosys.base.businfra.transaction.ITrxValue;
+import com.integrosys.base.businfra.transaction.TrxOperationException;
+import com.integrosys.base.techinfra.logger.DefaultLogger;
+import com.integrosys.cms.app.common.constant.ICMSConstant;
+
+/**
+ * This operation is responsible for the approval of the maintainence of the
+ * custodian doc
+ * 
+ * @author $Author: ravi $
+ * @version $Revision: 1.1 $
+ * @since $Date: 2003/07/10 10:20:36 $ Tag: $Name: $
+ */
+public class RejectUpdateCustodianDocTrxOperation extends AbstractUpdateCustodianDocTrxOperation {
+	/**
+	 * Default Constructor
+	 */
+	public RejectUpdateCustodianDocTrxOperation() {
+		super();
+	}
+
+	/**
+	 * Get the operation name of the current operation
+	 * @return String - the operation name of the current operation
+	 */
+	public String getOperationName() {
+		return ICMSConstant.ACTION_REJECT_CUSTODIAN_DOC;
+	}
+
+	/**
+	 * Process the transaction 1. Create the staging data 2. Create the
+	 * transaction record
+	 * @param anITrxValue - ITrxValue
+	 * @return ITrxResult - the transaction result
+	 * @throws TrxOperationException if encounters any error during the
+	 *         processing of the transaction
+	 */
+	public ITrxResult performProcess(ITrxValue anITrxValue) throws TrxOperationException {
+		DefaultLogger.debug(this, "Before Perform TrxValue: " + anITrxValue);
+		ICustodianTrxValue trxValue = updateCustodianTransaction(anITrxValue);
+		return super.constructITrxResult(anITrxValue, trxValue);
+	}
+}

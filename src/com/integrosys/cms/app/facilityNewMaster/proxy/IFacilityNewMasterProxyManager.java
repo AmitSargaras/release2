@@ -1,0 +1,53 @@
+package com.integrosys.cms.app.facilityNewMaster.proxy;
+
+import java.util.List;
+
+import com.integrosys.base.businfra.search.SearchResult;
+import com.integrosys.base.businfra.transaction.TransactionException;
+import com.integrosys.base.businfra.transaction.TrxParameterException;
+import com.integrosys.base.techinfra.ejbsupport.ConcurrentUpdateException;
+import com.integrosys.base.uiinfra.exception.CommandProcessingException;
+import com.integrosys.cms.app.facilityNewMaster.bus.FacilityNewMasterException;
+import com.integrosys.cms.app.facilityNewMaster.bus.IFacilityNewMaster;
+import com.integrosys.cms.app.facilityNewMaster.trx.IFacilityNewMasterTrxValue;
+import com.integrosys.cms.app.transaction.ITrxContext;
+
+/**
+ * This interface defines the list of attributes that will be available to the
+ * generation of a diary item
+ * 
+ * @author $Author: jtan $<br>
+ * @version $Revision: 1.6 $
+ * @since $Date: 2004/06/29 10:03:55 $ Tag: $Name: $
+ */
+public interface IFacilityNewMasterProxyManager {
+
+	public List searchFacilityNewMaster(String login) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public SearchResult getAllActualFacilityNewMaster() throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public SearchResult getFilteredActualFacilityNewMaster(String code,String name,String category,String type,String system,String line) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public SearchResult getAllActual(String searchBy,String searchText) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMaster deleteFacilityNewMaster(IFacilityNewMaster facilityNewMaster) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue makerCloseRejectedFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMasterTrxValue anIFacilityNewMasterTrxValue) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue makerCloseDraftFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMasterTrxValue anIFacilityNewMasterTrxValue) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMaster getFacilityNewMasterById(long id) throws FacilityNewMasterException,TrxParameterException,TransactionException ;
+	public IFacilityNewMaster updateFacilityNewMaster(IFacilityNewMaster facilityNewMaster) throws FacilityNewMasterException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	public IFacilityNewMasterTrxValue makerDeleteFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMasterTrxValue anICCFacilityNewMasterTrxValue, IFacilityNewMaster anICCFacilityNewMaster)throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue makerUpdateFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMasterTrxValue anICCFacilityNewMasterTrxValue, IFacilityNewMaster anICCFacilityNewMaster)
+	throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue makerUpdateSaveUpdateFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMasterTrxValue anICCFacilityNewMasterTrxValue, IFacilityNewMaster anICCFacilityNewMaster)
+	throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue makerUpdateSaveCreateFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMasterTrxValue anICCFacilityNewMasterTrxValue, IFacilityNewMaster anICCFacilityNewMaster)
+	throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public boolean isUniqueCode(String lineNumber,String system) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public boolean isUniqueFacilityCode(String facilityCode) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue makerEditRejectedFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMasterTrxValue anIFacilityNewMasterTrxValue, IFacilityNewMaster anFacilityNewMaster) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue getFacilityNewMasterTrxValue(long aFacilityNewMasterId) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue getFacilityNewMasterByTrxID(String aTrxID) throws FacilityNewMasterException,TransactionException,CommandProcessingException;
+	public IFacilityNewMasterTrxValue checkerApproveFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMasterTrxValue anIFacilityNewMasterTrxValue) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue checkerRejectFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMasterTrxValue anIFacilityNewMasterTrxValue) throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue makerCreateFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMaster anICCFacilityNewMaster)throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	public IFacilityNewMasterTrxValue makerSaveFacilityNewMaster(ITrxContext anITrxContext, IFacilityNewMaster anICCFacilityNewMaster)throws FacilityNewMasterException,TrxParameterException,TransactionException;
+	
+	public boolean isFacilityNameUnique(String facilityName);
+	public boolean isFacilityCpsIdUnique(String cpsId);
+}

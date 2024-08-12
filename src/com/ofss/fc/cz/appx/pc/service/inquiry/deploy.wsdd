@@ -1,0 +1,218 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from FinancialInstitutionInquiryApplicationServiceSpiService WSDL service -->
+
+  <service name="FinancialInstitutionInquiryApplicationServiceSpiPort" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://inquiry.service.pc.appx.cz.fc.ofss.com/"/>
+      <parameter name="wsdlServiceElement" value="FinancialInstitutionInquiryApplicationServiceSpiService"/>
+      <parameter name="schemaQualified" value="http://error.validation.infra.fc.ofss.com,http://dto.common.domain.framework.fc.ofss.com,http://domain.framework.fc.ofss.com,http://datatype.fc.ofss.com,http://response.service.fc.ofss.com,http://exception.infra.fc.ofss.com,http://validation.dto.app.fc.ofss.com,http://context.app.fc.ofss.com"/>
+      <parameter name="schemaUnqualified" value="http://framework.enumeration.fc.ofss.com,http://enumeration.infra.fc.ofss.com,http://inquiry.service.pc.appx.cz.fc.ofss.com/"/>
+      <parameter name="wsdlServicePort" value="FinancialInstitutionInquiryApplicationServiceSpiPort"/>
+      <parameter name="className" value="com.ofss.fc.cz.appx.pc.service.inquiry.FinancialInstitutionInquiryApplicationServiceSpiPortBindingSkeleton"/>
+      <parameter name="wsdlPortType" value="FinancialInstitutionInquiryApplicationServiceSpi"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <parameter name="allowedMethods" value="*"/>
+
+      <typeMapping
+        xmlns:ns="http://context.app.fc.ofss.com"
+        qname="ns:sessionContext"
+        type="java:com.ofss.fc.app.context.SessionContext"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://domain.framework.fc.ofss.com"
+        qname="ns:workItemViewObjectDTO"
+        type="java:com.ofss.fc.framework.domain.WorkItemViewObjectDTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://datatype.fc.ofss.com"
+        qname="ns:date"
+        type="java:com.ofss.fc.datatype.Date"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://error.validation.infra.fc.ofss.com"
+        qname="ns:validationError"
+        type="java:com.ofss.fc.infra.validation.error.ValidationError"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://context.app.fc.ofss.com"
+        qname="ns:approvalContext"
+        type="java:com.ofss.fc.app.context.ApprovalContext"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://enumeration.infra.fc.ofss.com"
+        qname="ns:replyMessageType"
+        type="java:com.ofss.fc.infra.enumeration.ReplyMessageType"
+        serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://inquiry.service.pc.appx.cz.fc.ofss.com/"
+        qname="ns:financialInstitutionInquiryRes"
+        type="java:com.ofss.fc.cz.appx.pc.service.inquiry.FinancialInstitutionInquiryRes"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://dto.common.domain.framework.fc.ofss.com"
+        qname="ns:dictionary"
+        type="java:com.ofss.fc.framework.domain.common.dto.Dictionary"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://validation.dto.app.fc.ofss.com"
+        qname="ns:validatable"
+        type="java:com.ofss.fc.app.dto.validation.Validatable"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://domain.framework.fc.ofss.com"
+        qname="ns:componentIdentityDTO"
+        type="java:com.ofss.fc.framework.domain.ComponentIdentityDTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://dto.common.domain.framework.fc.ofss.com"
+        qname="ns:dataTransferObject"
+        type="java:com.ofss.fc.framework.domain.common.dto.DataTransferObject"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://context.app.fc.ofss.com"
+        qname="ns:userContext"
+        type="java:com.ofss.fc.app.context.UserContext"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://inquiry.service.pc.appx.cz.fc.ofss.com/"
+        qname="ns:financialInstitutionInquiryDTO"
+        type="java:com.ofss.fc.cz.appx.pc.service.inquiry.FinancialInstitutionInquiryDTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://dto.common.domain.framework.fc.ofss.com"
+        qname="ns:nameValuePairDTO"
+        type="java:com.ofss.fc.framework.domain.common.dto.NameValuePairDTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://framework.enumeration.fc.ofss.com"
+        qname="ns:maintenanceType"
+        type="java:com.ofss.fc.enumeration.framework.MaintenanceType"
+        serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://framework.enumeration.fc.ofss.com"
+        qname="ns:serviceCallContextType"
+        type="java:com.ofss.fc.enumeration.framework.ServiceCallContextType"
+        serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://inquiry.service.pc.appx.cz.fc.ofss.com/"
+        qname="ns:financialInstitutionInquiryResDTO"
+        type="java:com.ofss.fc.cz.appx.pc.service.inquiry.FinancialInstitutionInquiryResDTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://enumeration.infra.fc.ofss.com"
+        qname="ns:responseCodeType"
+        type="java:com.ofss.fc.infra.enumeration.ResponseCodeType"
+        serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://exception.infra.fc.ofss.com"
+        qname="ns:replyMessage"
+        type="java:com.ofss.fc.infra.exception.ReplyMessage"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://response.service.fc.ofss.com"
+        qname="ns:baseResponse"
+        type="java:com.ofss.fc.service.response.BaseResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://response.service.fc.ofss.com"
+        qname="ns:transactionStatus"
+        type="java:com.ofss.fc.service.response.TransactionStatus"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://exception.infra.fc.ofss.com"
+        qname="ns:fatalExceptionBean"
+        type="java:com.ofss.fc.infra.exception.FatalExceptionBean"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://domain.framework.fc.ofss.com"
+        qname="ns:componentStateDTO"
+        type="java:com.ofss.fc.framework.domain.ComponentStateDTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <arrayMapping
+        xmlns:ns="http://exception.infra.fc.ofss.com"
+        qname="ns:extendedReply"
+        type="java:com.ofss.fc.infra.exception.ReplyMessage[]"
+        innerType="cmp-ns:replyMessage" xmlns:cmp-ns="http://exception.infra.fc.ofss.com"
+        encodingStyle=""
+      />
+  </service>
+</deployment>

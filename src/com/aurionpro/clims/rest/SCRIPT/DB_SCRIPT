@@ -1,0 +1,104 @@
+1.**************************************************************
+CREATE SEQUENCE CC_REST_INTERFACE_SEQ 
+MINVALUE 1 MAXVALUE 9999999999999999999 
+INCREMENT BY 1 START WITH 111 NOCACHE NOORDER CYCLE NOKEEP NOSCALE GLOBAL ;
+
+---------------------------------------------------------------------------------------
+2 ********************************************************************
+ CREATE TABLE CC_REST_INTERFACE_LOG
+   (	
+   "ID" VARCHAR2(20 BYTE), 
+   "REQUEST_ID" VARCHAR2(25 BYTE), 
+	"CHANNEL_CODE" VARCHAR2(20 BYTE), 
+	"INTERFACE_STATUS" VARCHAR2(25 BYTE), 
+	"INTERFACE_FAILED_REASON" VARCHAR2(1000 BYTE), 
+	"REQUEST_TEXT" CLOB, 
+	"REQUEST_DATE" TIMESTAMP (6) WITH TIME ZONE, 
+	"RESPONSE_TEXT" CLOB, 
+	"RESPONSE_DATE" TIMESTAMP (6) WITH TIME ZONE
+   ) ;
+ 
+ --------------------------------------------------------------------------------------
+ 
+ 3.**************************************************************
+CREATE SEQUENCE PARTY_REST_INTERFACE_SEQ 
+MINVALUE 1 MAXVALUE 9999999999999999999 
+INCREMENT BY 1 START WITH 100 NOCACHE NOORDER CYCLE NOKEEP NOSCALE GLOBAL ;
+
+---------------------------------------------------------------------------------------
+4 ********************************************************************
+ CREATE TABLE PARTY_REST_INTERFACE_LOG
+   (	
+   "ID" VARCHAR2(20 BYTE), 
+   "REQUEST_ID" VARCHAR2(25 BYTE), 
+	"CHANNEL_CODE" VARCHAR2(20 BYTE), 
+	"INTERFACE_STATUS" VARCHAR2(25 BYTE), 
+	"INTERFACE_FAILED_REASON" VARCHAR2(1000 BYTE), 
+	"REQUEST_TEXT" CLOB, 
+	"REQUEST_DATE" TIMESTAMP (6) WITH TIME ZONE, 
+	"RESPONSE_TEXT" CLOB, 
+	"RESPONSE_DATE" TIMESTAMP (6) WITH TIME ZONE
+   ) ;
+ 
+ 
+ ------------------------------------------------------------------
+ 5 **********************************************************************
+CREATE SEQUENCE CAM_REST_INTERFACE_SEQ 
+MINVALUE 1 MAXVALUE 9999999999999999999 
+INCREMENT BY 1 START WITH 111 NOCACHE NOORDER CYCLE NOKEEP NOSCALE GLOBAL ; 
+ ----------------------------------------------------------------------------------------
+ 6 **********************************************************************
+ CREATE TABLE CAM_REST_INTERFACE_LOG
+   (	
+   "ID" VARCHAR2(20 BYTE), 
+   "REQUEST_ID" VARCHAR2(25 BYTE), 
+	"CHANNEL_CODE" VARCHAR2(20 BYTE), 
+	"INTERFACE_STATUS" VARCHAR2(25 BYTE), 
+	"INTERFACE_FAILED_REASON" VARCHAR2(1000 BYTE), 
+	"REQUEST_TEXT" CLOB, 
+	"REQUEST_DATE" TIMESTAMP (6) WITH TIME ZONE, 
+	"RESPONSE_TEXT" CLOB, 
+	"RESPONSE_DATE" TIMESTAMP (6) WITH TIME ZONE
+) ;
+ ------------------------------------------------------------------------------------------
+ 
+ 
+ ------------------------------------------------------------------
+ 7 **********************************************************************
+CREATE SEQUENCE FACILITY_REST_INTERFACE_SEQ 
+MINVALUE 1 MAXVALUE 9999999999999999999 
+INCREMENT BY 1 START WITH 111 NOCACHE NOORDER CYCLE NOKEEP NOSCALE GLOBAL ; 
+ ----------------------------------------------------------------------------------------
+ 8 **********************************************************************
+ CREATE TABLE FACILITY_REST_INTERFACE_LOG
+   (	
+   "ID" VARCHAR2(20 BYTE), 
+   "REQUEST_ID" VARCHAR2(25 BYTE), 
+	"CHANNEL_CODE" VARCHAR2(20 BYTE), 
+	"INTERFACE_STATUS" VARCHAR2(25 BYTE), 
+	"INTERFACE_FAILED_REASON" VARCHAR2(1000 BYTE), 
+	"REQUEST_TEXT" CLOB, 
+	"REQUEST_DATE" TIMESTAMP (6) WITH TIME ZONE, 
+	"RESPONSE_TEXT" CLOB, 
+	"RESPONSE_DATE" TIMESTAMP (6) WITH TIME ZONE
+) ;
+ ------------------------------------------------------------------------------------------
+ 
+ ***************************************************************************************
+  CREATE SEQUENCE UDF_ENQUIRY_REST_INTERFACE_SEQ 
+  MINVALUE 1 MAXVALUE 9999999999999999999 
+  INCREMENT BY 1 START WITH 111 NOCACHE NOORDER CYCLE NOKEEP NOSCALE GLOBAL ; 
+ ****************************************************************************************
+ CREATE TABLE UDF_ENQUIRY_REST_INTERFACE_LOG
+   (	"ID" VARCHAR2(20 BYTE), 
+	"REQUEST_ID" VARCHAR2(25 BYTE), 
+	"CHANNEL_CODE" VARCHAR2(20 BYTE), 
+	"INTERFACE_STATUS" VARCHAR2(25 BYTE), 
+	"INTERFACE_FAILED_REASON" VARCHAR2(1000 BYTE), 
+	"REQUEST_TEXT" CLOB, 
+	"REQUEST_DATE" TIMESTAMP (6) WITH TIME ZONE, 
+	"RESPONSE_TEXT" CLOB, 
+	"RESPONSE_DATE" TIMESTAMP (6) WITH TIME ZONE
+   );  
+-------------------------------------------------------------------------------------------   
+ 

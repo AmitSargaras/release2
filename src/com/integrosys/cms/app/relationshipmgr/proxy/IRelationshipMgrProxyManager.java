@@ -1,0 +1,101 @@
+package com.integrosys.cms.app.relationshipmgr.proxy;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.integrosys.base.businfra.search.SearchResult;
+import com.integrosys.base.businfra.transaction.TransactionException;
+import com.integrosys.base.businfra.transaction.TrxParameterException;
+import com.integrosys.base.techinfra.ejbsupport.ConcurrentUpdateException;
+import com.integrosys.base.uiinfra.exception.CommandProcessingException;
+import com.integrosys.cms.app.fileInsertMapper.bus.IFileMapperMaster;
+import com.integrosys.cms.app.fileInsertMapper.bus.OBFileMapperID;
+import com.integrosys.cms.app.fileInsertMapper.bus.OBFileMapperMaster;
+import com.integrosys.cms.app.geography.bus.NoSuchGeographyException;
+import com.integrosys.cms.app.relationshipmgr.bus.IHRMSData;
+import com.integrosys.cms.app.relationshipmgr.bus.RelationshipMgrException;
+import com.integrosys.cms.app.relationshipmgr.trx.IRelationshipMgrTrxValue;
+import com.integrosys.cms.app.transaction.ITrxContext;
+import com.integrosys.cms.ui.relationshipmgr.IRelationshipMgr;
+
+public interface IRelationshipMgrProxyManager {
+	
+	public SearchResult getRelationshipMgrList(String rmCode,String rmName);
+	
+	public SearchResult getRelationshipMgrList(String regionId);
+	
+	public boolean isRMCodeUnique(String rmCode);
+	
+	public IRelationshipMgrTrxValue makerCreateRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anIRelationshipMgrTrxValue, IRelationshipMgr anICCRelationshipMgr)
+		throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgr getRelationshipMgrById(long id) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgr createRelationshipMgr(IRelationshipMgr RelationshipMgr) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	 
+	public IRelationshipMgr updateRelationshipMgr(IRelationshipMgr RelationshipMgr) throws RelationshipMgrException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	
+	public IRelationshipMgr deleteRelationshipMgr(IRelationshipMgr RelationshipMgr) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgrTrxValue makerUpdateRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anICCRelationshipMgrTrxValue, IRelationshipMgr anICCRelationshipMgr)
+		throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgrTrxValue makerEditRejectedRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anIRelationshipMgrTrxValue, IRelationshipMgr anRelationshipMgr) 
+		throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgrTrxValue getRelationshipMgrTrxValue(long aRelationshipMgrId) throws RelationshipMgrException,TrxParameterException,TransactionException;
+
+	public IRelationshipMgrTrxValue makerDeleteRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anICCRelationshipMgrTrxValue, IRelationshipMgr anICCRelationshipMgr)
+		throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgrTrxValue getRelationshipMgrByTrxID(String aTrxID) throws RelationshipMgrException,TransactionException,CommandProcessingException;
+	
+	public IRelationshipMgrTrxValue checkerApproveRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anIRelationshipMgrTrxValue) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgrTrxValue checkerRejectRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anIRelationshipMgrTrxValue) throws RelationshipMgrException,TrxParameterException,TransactionException;
+
+	public IRelationshipMgrTrxValue makerCloseRejectedRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anISystemBankTrxValue) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgrTrxValue makerCloseDraftRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anISystemBankTrxValue) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgrTrxValue makerUpdateCreateRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anICCRelationshipMgrTrxValue, IRelationshipMgr anICCRelationshipMgr)
+		throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgrTrxValue makerUpdateSaveRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anICCRelationshipMgrTrxValue, IRelationshipMgr anICCRelationshipMgr)
+		throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public IRelationshipMgrTrxValue makerSaveRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anIRelationshipMgrTrxValue, IRelationshipMgr anICCRelationshipMgr)
+	throws RelationshipMgrException,TrxParameterException,TransactionException;
+	
+	public List getRegionList(String countryCode);
+	
+	public boolean isValidRegionCode(String regionCode);
+	
+	public boolean isPrevFileUploadPending() throws RelationshipMgrException,TrxParameterException,TransactionException;
+	public IRelationshipMgrTrxValue makerInsertMapperRelationshipMgr(ITrxContext anITrxContext, OBFileMapperID obFileMapperID)throws RelationshipMgrException,TrxParameterException,TransactionException;
+	public int insertRelationshipMgr(IFileMapperMaster fileMapperMaster, String userName, ArrayList resultList) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	public IRelationshipMgrTrxValue getInsertFileByTrxID(String aTrxID) throws RelationshipMgrException,TransactionException,CommandProcessingException;
+	public List getAllStage(String searchBy, String login) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	public IRelationshipMgrTrxValue checkerApproveInsertRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anIRelationshipMgrTrxValue) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	public List getFileMasterList(String searchBy) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	public IRelationshipMgr insertActualRelationshipMgr(String sysId) throws RelationshipMgrException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	public IRelationshipMgrTrxValue checkerCreateRelationshipMgr(ITrxContext anITrxContext,IRelationshipMgr anICCRelationshipMgr, String refStage)throws RelationshipMgrException,TrxParameterException,TransactionException;
+	public IRelationshipMgrTrxValue checkerRejectInsertRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anIRelationshipMgrTrxValue) throws RelationshipMgrException,TrxParameterException,TransactionException;
+	public IRelationshipMgrTrxValue makerInsertCloseRejectedRelationshipMgr(ITrxContext anITrxContext, IRelationshipMgrTrxValue anIRelationshipMgrTrxValue) throws RelationshipMgrException,TrxParameterException,TransactionException;
+
+	public boolean isRelationshipMgrNameUnique(String relationshipMgrName);
+	
+	public void deleteTransaction(OBFileMapperMaster obFileMapperMaster) throws NoSuchGeographyException,TrxParameterException,TransactionException;
+	
+	public boolean isEmployeeIdUnique(String employeeId);
+	
+	public IHRMSData getHRMSEmpDetails(String rmEmpID);
+	
+	public IRelationshipMgr getRMDetails(String rmId);
+
+	public IHRMSData getLocalCAD(String cadEmployeeCode, String cadBranchCode);
+	
+	public void insertHRMSData(String[] data);
+	
+	public void updateHRMSData(IHRMSData  ihrmsData,String[] data);
+}

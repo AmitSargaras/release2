@@ -1,0 +1,50 @@
+package com.integrosys.cms.app.limitsOfAuthorityMaster.proxy;
+
+import com.integrosys.base.businfra.search.SearchResult;
+import com.integrosys.base.businfra.transaction.TransactionException;
+import com.integrosys.base.businfra.transaction.TrxParameterException;
+import com.integrosys.base.uiinfra.exception.CommandProcessingException;
+import com.integrosys.cms.app.limitsOfAuthorityMaster.bus.ILimitsOfAuthorityMaster;
+import com.integrosys.cms.app.limitsOfAuthorityMaster.bus.LimitsOfAuthorityMasterException;
+import com.integrosys.cms.app.limitsOfAuthorityMaster.trx.ILimitsOfAuthorityMasterTrxValue;
+import com.integrosys.cms.app.transaction.ITrxContext;
+
+public interface IProxyManager {
+
+	public SearchResult getAllActual() throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+	
+	public ILimitsOfAuthorityMasterTrxValue makerCreate(ITrxContext anITrxContext, ILimitsOfAuthorityMaster obj)throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+	
+	public ILimitsOfAuthorityMasterTrxValue getByTrxID(String aTrxID) throws LimitsOfAuthorityMasterException,TransactionException,CommandProcessingException;
+	
+	public ILimitsOfAuthorityMasterTrxValue checkerApprove(ITrxContext anITrxContext, ILimitsOfAuthorityMasterTrxValue trx) throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+	
+	public ILimitsOfAuthorityMasterTrxValue makerUpdateSaveUpdate(ITrxContext anITrxContext, ILimitsOfAuthorityMasterTrxValue trx, ILimitsOfAuthorityMaster obj)
+			throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+	
+	public ILimitsOfAuthorityMasterTrxValue makerSave(ITrxContext anITrxContext, ILimitsOfAuthorityMaster obj)throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+
+	public ILimitsOfAuthorityMasterTrxValue getTrxValue(long id)	throws LimitsOfAuthorityMasterException,TransactionException,CommandProcessingException;
+	
+	public ILimitsOfAuthorityMasterTrxValue makerUpdate(ITrxContext ctx, ILimitsOfAuthorityMasterTrxValue trxValueIn,
+			ILimitsOfAuthorityMaster obj)throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+	
+	public ILimitsOfAuthorityMasterTrxValue checkerReject(ITrxContext ctx, ILimitsOfAuthorityMasterTrxValue trxValueIn)
+			throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+
+	public ILimitsOfAuthorityMasterTrxValue makerEditRejected(ITrxContext ctx, ILimitsOfAuthorityMasterTrxValue trxValueIn,ILimitsOfAuthorityMaster obj)
+			throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+
+	public ILimitsOfAuthorityMasterTrxValue makerCloseRejected(ITrxContext ctx, ILimitsOfAuthorityMasterTrxValue trxValueIn)
+			throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+
+	public ILimitsOfAuthorityMasterTrxValue makerUpdateSaveCreate(ITrxContext ctx, ILimitsOfAuthorityMasterTrxValue trxValueIn,ILimitsOfAuthorityMaster obj)
+			throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+	
+	public ILimitsOfAuthorityMasterTrxValue makerCloseDraft(ITrxContext ctx, ILimitsOfAuthorityMasterTrxValue trxValueIn)
+			throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+	
+	public ILimitsOfAuthorityMasterTrxValue makerDelete(ITrxContext ctx, ILimitsOfAuthorityMasterTrxValue trxValueIn,ILimitsOfAuthorityMaster obj)
+			throws LimitsOfAuthorityMasterException,TrxParameterException,TransactionException;
+
+}

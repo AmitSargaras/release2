@@ -1,0 +1,18 @@
+package com.integrosys.cms.app.npaTraqCodeMaster.bus;
+
+import com.integrosys.base.businfra.search.SearchResult;
+import com.integrosys.base.businfra.transaction.TransactionException;
+import com.integrosys.base.businfra.transaction.TrxParameterException;
+import com.integrosys.base.techinfra.ejbsupport.ConcurrentUpdateException;
+
+public interface INpaTraqCodeMasterBusManager {
+
+	SearchResult getAllNpaTraqCodeMaster()throws NpaTraqCodeMasterException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	public boolean isNpaTraqCodeUniqueJdbc(String securityType, String securitySubType, String propertyTypeDesc);
+	INpaTraqCodeMaster createNpaTraqCodeMaster(INpaTraqCodeMaster npaTraqCodeMaster)throws NpaTraqCodeMasterException;
+	INpaTraqCodeMaster getNpaTraqCodeMasterById(long id) throws NpaTraqCodeMasterException,TrxParameterException,TransactionException;
+	INpaTraqCodeMaster updateNpaTraqCodeMaster(INpaTraqCodeMaster item) throws NpaTraqCodeMasterException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	public boolean isNpaTraqCodeUnique(String npaTraqCode, String securityType, String securitySubType, String propertyTypeDesc);
+	INpaTraqCodeMaster updateToWorkingCopy(INpaTraqCodeMaster workingCopy, INpaTraqCodeMaster imageCopy) throws NpaTraqCodeMasterException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	/*SearchResult getAllFilteredProductMaster(String code,String name)throws ProductMasterException,TrxParameterException,TransactionException,ConcurrentUpdateException;*/
+}

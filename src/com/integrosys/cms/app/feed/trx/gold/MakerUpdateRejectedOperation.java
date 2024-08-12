@@ -1,0 +1,23 @@
+package com.integrosys.cms.app.feed.trx.gold;
+
+import com.integrosys.base.businfra.transaction.ITrxResult;
+import com.integrosys.base.businfra.transaction.ITrxValue;
+import com.integrosys.base.businfra.transaction.TrxOperationException;
+import com.integrosys.cms.app.common.constant.ICMSConstant;
+
+public class MakerUpdateRejectedOperation extends AbstractGoldTrxOperation {
+
+	public MakerUpdateRejectedOperation() {
+		super();
+	}
+
+	public String getOperationName() {
+		return ICMSConstant.ACTION_MAKER_UPDATE_REJECTED_GOLD_FEED_GROUP;
+	}
+
+	public ITrxResult performProcess(ITrxValue anITrxValue) throws TrxOperationException {
+		IGoldFeedGroupTrxValue trxValue = createStagingGoldFeedGroup(getGoldFeedGroupTrxValue(anITrxValue));
+		trxValue = updateGoldFeedGroupTransaction(trxValue);
+		return super.prepareResult(trxValue);
+	}
+}

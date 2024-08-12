@@ -1,0 +1,137 @@
+package com.integrosys.cms.ui.newTat;
+
+/**
+ *@author abhijit.rudrakshawar
+ *$ Command for Listing Customer
+ */
+
+import java.util.HashMap;
+
+import com.integrosys.base.businfra.search.SearchResult;
+import com.integrosys.base.techinfra.logger.DefaultLogger;
+import com.integrosys.base.uiinfra.common.AbstractCommand;
+import com.integrosys.base.uiinfra.common.ICommonEventConstant;
+import com.integrosys.base.uiinfra.exception.CommandProcessingException;
+import com.integrosys.base.uiinfra.exception.CommandValidationException;
+import com.integrosys.cms.app.common.constant.ICMSConstant;
+import com.integrosys.cms.app.customer.bus.CustomerSearchCriteria;
+import com.integrosys.cms.app.customer.bus.ICMSCustomer;
+import com.integrosys.cms.app.customer.proxy.CustomerProxyFactory;
+import com.integrosys.cms.app.customer.proxy.ICustomerProxy;
+import com.integrosys.cms.app.transaction.OBTrxContext;
+import com.integrosys.cms.ui.common.constant.IGlobalConstant;
+import com.integrosys.component.bizstructure.app.bus.ITeam;
+
+public class NewTatListCustomerCommand extends AbstractCommand {
+
+	public NewTatListCustomerCommand() {
+
+	}
+
+	public String[][] getParameterDescriptor() {
+		return (new String[][] {
+				{ IGlobalConstant.USER_TEAM,"com.integrosys.component.bizstructure.app.bus.ITeam",GLOBAL_SCOPE },
+				{"customerSearchCriteria","com.integrosys.cms.app.customer.bus.CustomerSearchCriteria",FORM_SCOPE },
+				{"customerSearchCriteria1","com.integrosys.cms.app.customer.bus.CustomerSearchCriteria",SERVICE_SCOPE },
+				 { IGlobalConstant.GLOBAL_CUSTOMER_OBJ, "com.integrosys.cms.app.customer.bus.ICMSCustomer", GLOBAL_SCOPE },
+				{ "theOBTrxContext","com.integrosys.cms.app.transaction.OBTrxContext",FORM_SCOPE },
+				{ "event", "java.lang.String", REQUEST_SCOPE },
+				{ "lspLeIdListSearch", "java.lang.String", REQUEST_SCOPE }, 
+				{ "startIndex", "java.lang.String", REQUEST_SCOPE },
+				{ "startIndexInner", "java.lang.String", REQUEST_SCOPE },
+				{ "lspShortNameListSearch", "java.lang.String", REQUEST_SCOPE }, 
+				{ "indicator", "java.lang.String", REQUEST_SCOPE }, });
+	}
+
+	/**
+	 * Defines a two dimensional array with the result list to be expected as a
+	 * result from the doExecute method using a HashMap syntax for the array is
+	 * (HashMapkey,classname,scope) The scope may be request,form or service
+	 * 
+	 * @return the two dimensional String array
+	 */
+	public String[][] getResultDescriptor() {
+		return (new String[][] {
+				{ "customerList","com.integrosys.base.businfra.search.SearchResult",FORM_SCOPE },
+				{ "customerList","com.integrosys.base.businfra.search.SearchResult",SERVICE_SCOPE },
+				{IGlobalConstant.GLOBAL_CUSTOMERSEARCHCRITERIA_OBJ,"com.integrosys.cms.app.customer.bus.CustomerSearchCriteria",GLOBAL_SCOPE },
+				{"customerSearchCriteria1","com.integrosys.cms.app.customer.bus.CustomerSearchCriteria",SERVICE_SCOPE },
+				 { IGlobalConstant.GLOBAL_CUSTOMER_OBJ, "com.integrosys.cms.app.customer.bus.ICMSCustomer", GLOBAL_SCOPE },
+					{ "lspLeIdListSearch", "java.lang.String", REQUEST_SCOPE }, 
+					{ "lspShortNameListSearch", "java.lang.String", REQUEST_SCOPE }, 
+					{ "startIndex", "java.lang.String", REQUEST_SCOPE },
+					{ "startIndexInner", "java.lang.String", REQUEST_SCOPE },
+				{ "selectedArrayMap", "java.util.HashMap", SERVICE_SCOPE },
+		});
+	}
+
+	/**
+	 * This method does the Business operations with the HashMap and put the
+	 * results back into the HashMap.Here creation for Company Borrower is done.
+	 * 
+	 * @param map
+	 *            is of type HashMap
+	 * @throws com.integrosys.base.uiinfra.exception.CommandProcessingException
+	 *             on errors
+	 * @throws com.integrosys.base.uiinfra.exception.CommandValidationException
+	 *             on errors
+	 * @return HashMap with the Result
+	 */
+	public HashMap doExecute(HashMap map) throws CommandProcessingException,
+			CommandValidationException {
+		HashMap result = new HashMap();
+		HashMap exceptionMap = new HashMap();
+		HashMap temp = new HashMap();
+		OBTrxContext theOBTrxContext = (OBTrxContext) map.get("theOBTrxContext");
+		ICMSCustomer cust = (ICMSCustomer) map.get(IGlobalConstant.GLOBAL_CUSTOMER_OBJ);
+		CustomerSearchCriteria formCriteria = (CustomerSearchCriteria) map.get("customerSearchCriteria");
+		CustomerSearchCriteria searchCriteria = null;
+		 String startIndex = (String) map.get("startIndex");
+		 String startIndexInner = (String) map.get("startIndexInner");
+		if (searchCriteria == null) {
+			DefaultLogger.debug(this, "- Search Criteria from Form !");
+			if(formCriteria.getCustomerName()==null){
+				CustomerSearchCriteria sessionCriteria=(CustomerSearchCriteria) map.get("customerSearchCriteria1");
+				formCriteria.setCustomerName(sessionCriteria.getCustomerName());
+			}
+			searchCriteria = formCriteria;
+		}
+		 
+		 String lspLeIdListSearch = (String) map.get("lspLeIdListSearch");
+		 String lspShortNameListSearch = (String) map.get("lspShortNameListSearch");
+		ITeam team = (ITeam) (map.get(IGlobalConstant.USER_TEAM));
+		long teamTypeID = team.getTeamType().getTeamTypeID();
+
+		if (teamTypeID == ICMSConstant.TEAM_TYPE_MR) {
+			searchCriteria.setLmtProfileType(ICMSConstant.AA_TYPE_TRADE);
+		}
+
+		searchCriteria.setCtx(theOBTrxContext);
+
+		try {
+			ICustomerProxy custproxy = CustomerProxyFactory.getProxy();
+			SearchResult sr = custproxy.searchCustomer(searchCriteria);
+
+			result.put("customerList", sr);
+			result.put(IGlobalConstant.GLOBAL_CUSTOMERSEARCHCRITERIA_OBJ,
+					searchCriteria);
+			result.put("customerSearchCriteria1", searchCriteria);
+		} catch (Exception e) {
+			CommandProcessingException cpe = new CommandProcessingException(
+					"failed to search customer using search criteria '"
+							+ searchCriteria + "'");
+			cpe.initCause(e);
+			throw cpe;
+		}
+		result.put(IGlobalConstant.GLOBAL_CUSTOMER_OBJ,cust);
+		result.put("selectedArrayMap", null);
+		 result.put("lspLeIdListSearch", lspLeIdListSearch);
+		 result.put("lspShortNameListSearch", lspShortNameListSearch);
+		 result.put("startIndex", startIndex);
+		 result.put("startIndexInner", startIndexInner);
+		temp.put(ICommonEventConstant.COMMAND_RESULT_MAP, result);
+		temp.put(ICommonEventConstant.COMMAND_EXCEPTION_MAP, exceptionMap);
+		return temp;
+	}
+
+}

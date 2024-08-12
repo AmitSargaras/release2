@@ -1,0 +1,94 @@
+package com.integrosys.cms.app.insurancecoverage.proxy;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.integrosys.base.businfra.search.SearchResult;
+import com.integrosys.base.businfra.transaction.TransactionException;
+import com.integrosys.base.businfra.transaction.TrxParameterException;
+import com.integrosys.base.techinfra.ejbsupport.ConcurrentUpdateException;
+import com.integrosys.base.uiinfra.exception.CommandProcessingException;
+import com.integrosys.cms.app.fileInsertMapper.bus.IFileMapperMaster;
+import com.integrosys.cms.app.fileInsertMapper.bus.OBFileMapperID;
+import com.integrosys.cms.app.fileInsertMapper.bus.OBFileMapperMaster;
+import com.integrosys.cms.app.geography.bus.NoSuchGeographyException;
+import com.integrosys.cms.app.insurancecoverage.bus.InsuranceCoverageException;
+import com.integrosys.cms.app.insurancecoverage.trx.IInsuranceCoverageTrxValue;
+import com.integrosys.cms.app.transaction.ITrxContext;
+import com.integrosys.cms.ui.insurancecoverage.IInsuranceCoverage;
+
+/**
+ * Purpose: Used for defining operations for Insurance Coverage
+ * 
+ * @author Dattatray Thorat
+ * @version $Revision: 1.0 $
+ */
+
+public interface IInsuranceCoverageProxyManager {
+	
+	public SearchResult getInsuranceCoverageList(String icCode,String companyName);
+	
+	public SearchResult getInsuranceCoverageDtlsList(long id);
+	
+	public boolean isICCodeUnique(String rmCode);
+	
+	public IInsuranceCoverageTrxValue makerCreateInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anIInsuranceCoverageTrxValue, IInsuranceCoverage anICCInsuranceCoverage)
+		throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverage getInsuranceCoverageById(long id) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverage createInsuranceCoverage(IInsuranceCoverage InsuranceCoverage) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	 
+	public IInsuranceCoverage updateInsuranceCoverage(IInsuranceCoverage InsuranceCoverage) throws InsuranceCoverageException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	
+	public IInsuranceCoverage deleteInsuranceCoverage(IInsuranceCoverage InsuranceCoverage) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverageTrxValue makerUpdateInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anICCInsuranceCoverageTrxValue, IInsuranceCoverage anICCInsuranceCoverage)
+		throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverageTrxValue makerEditRejectedInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anIInsuranceCoverageTrxValue, IInsuranceCoverage anInsuranceCoverage) 
+		throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverageTrxValue getInsuranceCoverageTrxValue(long aInsuranceCoverageId) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+
+	public IInsuranceCoverageTrxValue makerDeleteInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anICCInsuranceCoverageTrxValue, IInsuranceCoverage anICCInsuranceCoverage)
+		throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverageTrxValue getInsuranceCoverageByTrxID(String aTrxID) throws InsuranceCoverageException,TransactionException,CommandProcessingException;
+	
+	public IInsuranceCoverageTrxValue checkerApproveInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anIInsuranceCoverageTrxValue) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverageTrxValue checkerRejectInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anIInsuranceCoverageTrxValue) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+
+	public IInsuranceCoverageTrxValue makerCloseRejectedInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anISystemBankTrxValue) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverageTrxValue makerCloseDraftInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anISystemBankTrxValue) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverageTrxValue makerUpdateCreateInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anICCInsuranceCoverageTrxValue, IInsuranceCoverage anICCInsuranceCoverage)
+		throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverageTrxValue makerUpdateSaveInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anICCInsuranceCoverageTrxValue, IInsuranceCoverage anICCInsuranceCoverage)
+		throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public IInsuranceCoverageTrxValue makerSaveInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anIInsuranceCoverageTrxValue, IInsuranceCoverage anICCInsuranceCoverage)
+	throws InsuranceCoverageException,TrxParameterException,TransactionException;	
+	
+	public boolean isCompanyNameUnique(String companyName);
+	
+	//************** Methods for File Upload ******************
+	
+	public boolean isPrevFileUploadPending() throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	public IInsuranceCoverageTrxValue makerInsertMapperInsuranceCoverage(ITrxContext anITrxContext, OBFileMapperID obFileMapperID)throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	public int insertInsuranceCoverage(IFileMapperMaster fileMapperMaster, String userName, ArrayList resultList) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	public IInsuranceCoverageTrxValue getInsertFileByTrxID(String aTrxID) throws InsuranceCoverageException,TransactionException,CommandProcessingException;
+	public List getAllStage(String searchBy, String login) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	public IInsuranceCoverageTrxValue checkerApproveInsertInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anIInsuranceCoverageTrxValue) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	public List getFileMasterList(String searchBy) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	public IInsuranceCoverage insertActualInsuranceCoverage(String sysId) throws InsuranceCoverageException,TrxParameterException,TransactionException,ConcurrentUpdateException;
+	public IInsuranceCoverageTrxValue checkerCreateInsuranceCoverage(ITrxContext anITrxContext,IInsuranceCoverage anICCInsuranceCoverage, String refStage)throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	public IInsuranceCoverageTrxValue checkerRejectInsertInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anIInsuranceCoverageTrxValue) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	public IInsuranceCoverageTrxValue makerInsertCloseRejectedInsuranceCoverage(ITrxContext anITrxContext, IInsuranceCoverageTrxValue anIInsuranceCoverageTrxValue) throws InsuranceCoverageException,TrxParameterException,TransactionException;
+	
+	public void deleteTransaction(OBFileMapperMaster obFileMapperMaster) throws NoSuchGeographyException,TrxParameterException,TransactionException;
+	
+}

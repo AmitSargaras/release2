@@ -1,0 +1,55 @@
+package com.integrosys.cms.app.leiDateValidation.proxy;
+
+import com.integrosys.base.businfra.search.SearchResult;
+import com.integrosys.base.businfra.transaction.TransactionException;
+import com.integrosys.base.businfra.transaction.TrxParameterException;
+import com.integrosys.base.uiinfra.exception.CommandProcessingException;
+import com.integrosys.cms.app.leiDateValidation.bus.ILeiDateValidation;
+import com.integrosys.cms.app.leiDateValidation.bus.LeiDateValidationException;
+import com.integrosys.cms.app.leiDateValidation.bus.OBLeiDateValidation;
+import com.integrosys.cms.app.leiDateValidation.trx.ILeiDateValidationTrxValue;
+import com.integrosys.cms.app.transaction.ITrxContext;
+import com.integrosys.cms.app.transaction.OBTrxContext;
+
+public interface ILeiDateValidationProxyManager {
+
+	
+	public SearchResult getAllActualLeiDateValidation() throws LeiDateValidationException,TrxParameterException,TransactionException;
+	
+	public ILeiDateValidationTrxValue makerCreateLeiDateValidation(ITrxContext anITrxContext, ILeiDateValidation anICCLeiDateValidation)throws LeiDateValidationException,TrxParameterException,TransactionException;
+	
+	public ILeiDateValidationTrxValue getLeiDateValidationByTrxID(String aTrxID) throws LeiDateValidationException,TransactionException,CommandProcessingException;
+	
+	public ILeiDateValidationTrxValue checkerApproveLeiDateValidation(ITrxContext anITrxContext, ILeiDateValidationTrxValue anILeiDateValidationTrxValue) throws LeiDateValidationException,TrxParameterException,TransactionException;
+	
+	public boolean isPartyIDUnique(String partyID);
+	
+	public ILeiDateValidationTrxValue makerUpdateSaveUpdateLeiDateValidation(ITrxContext anITrxContext, ILeiDateValidationTrxValue anICCLeiDateValidationTrxValue, ILeiDateValidation anICCLeiDateValidation)
+			throws LeiDateValidationException,TrxParameterException,TransactionException;
+	
+	public ILeiDateValidationTrxValue makerSaveLeiDateValidation(ITrxContext anITrxContext, ILeiDateValidation anICCLeiDateValidation)throws LeiDateValidationException,TrxParameterException,TransactionException;
+
+	public ILeiDateValidationTrxValue getLeiDateValidationTrxValue(long partyID)
+			throws LeiDateValidationException,TransactionException,CommandProcessingException;
+
+	public ILeiDateValidationTrxValue makerUpdateLeiDateValidation(OBTrxContext ctx, ILeiDateValidationTrxValue trxValueIn,
+			OBLeiDateValidation leiDateValidation)throws LeiDateValidationException,TrxParameterException,TransactionException;
+	
+	public ILeiDateValidationTrxValue checkerRejectLeiDateValidation(ITrxContext ctx, ILeiDateValidationTrxValue trxValueIn)
+			throws LeiDateValidationException,TrxParameterException,TransactionException;
+
+	public ILeiDateValidationTrxValue makerEditRejectedLeiDateValidation(ITrxContext ctx, ILeiDateValidationTrxValue trxValueIn,ILeiDateValidation anICCLeiDateValidation)
+			throws LeiDateValidationException,TrxParameterException,TransactionException;
+
+	public ILeiDateValidationTrxValue makerCloseRejectedLeiDateValidation(ITrxContext ctx, ILeiDateValidationTrxValue trxValueIn)
+			throws LeiDateValidationException,TrxParameterException,TransactionException;
+
+	public ILeiDateValidationTrxValue makerUpdateSaveCreateLeiDateValidation(ITrxContext ctx, ILeiDateValidationTrxValue trxValueIn,ILeiDateValidation anICCLeiDateValidation)
+			throws LeiDateValidationException,TrxParameterException,TransactionException;
+	
+	public ILeiDateValidationTrxValue makerCloseDraftLeiDateValidation(ITrxContext ctx, ILeiDateValidationTrxValue trxValueIn)
+			throws LeiDateValidationException,TrxParameterException,TransactionException;
+	
+	public SearchResult getAllFilteredActualLeiDateValidation(String code,String name)
+			throws LeiDateValidationException,TrxParameterException,TransactionException;
+	}
