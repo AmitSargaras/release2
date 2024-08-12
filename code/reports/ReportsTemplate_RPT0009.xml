@@ -1,0 +1,1307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reports>
+	<report>
+		<query>
+
+WITH t_entry_name AS
+  (SELECT entry_name,
+    category_code,
+    entry_code
+  FROM common_code_category_entry
+  WHERE active_status ='1'
+  AND category_code  IN ('FREQUENCY','MORTGAGE_TYPE','PROPERTY_TYPE','HDFC_SEGMENT','ADV_NAME', 'TYPE_CHARGE')
+  ),
+  t_valuation_1 AS
+  (SELECT *
+  FROM
+    (SELECT ROW_NUMBER() OVER (PARTITION BY CMS_COLLATERAL_ID ORDER BY id DESC) rnk,
+      cms_collateral_id,
+      VAL_CREATION_DATE_V1,
+      TOTAL_PROPERTY_AMOUNT_V1,
+      VALUATOR_COMPANY_V1,
+      VALUATION_DATE_V1,
+			 ( CASE
+			    WHEN BUILTUP_AREA_V1=0
+			    THEN '-'
+			    ELSE BUILTUP_AREA_V1
+			      ||' '
+			      ||
+			      (SELECT entry_name
+			      FROM common_code_category_entry
+			      WHERE entry_code=BUILTUP_AREA_UOM_V1 and  active_status='1'
+			      )
+			  END )AS BUILTUP_AREA_V1,
+			 ( CASE
+			    WHEN LAND_AREA_V1=0
+			    THEN '-'
+			    ELSE LAND_AREA_V1
+			      ||' '
+			      ||
+			      (SELECT entry_name
+			      FROM common_code_category_entry
+			      WHERE entry_code=LAND_AREA_UOM_V1 and  active_status='1'
+			      )
+			  END )AS LAND_AREA_V1,
+      LAND_VALUE_IRB_V1,
+      BUILDING_VALUE_IRB_V1,
+      RECONSTRUCTION_VALUE_IRB_V1
+    FROM CMS_PROPERTY_VAL1
+    )
+  WHERE rnk
+    &lt;
+  = 3
+  ),
+  t_valuation_2
+AS
+  (SELECT *
+  FROM
+    (SELECT ROW_NUMBER() OVER (PARTITION BY CMS_COLLATERAL_ID ORDER BY id DESC) rnk,
+      cms_collateral_id,
+      VAL_CREATION_DATE_V2,
+      TOTAL_PROPERTY_AMOUNT_V2,
+      VALUATOR_COMPANY_V2,
+      VALUATION_DATE_V2,
+			 ( CASE
+			    WHEN BUILTUP_AREA_V2=0
+			    THEN '-'
+			    ELSE BUILTUP_AREA_V2
+			      ||' '
+			      ||
+			      (SELECT entry_name
+			      FROM common_code_category_entry
+			      WHERE entry_code=BUILTUP_AREA_UOM_V2 and  active_status='1'
+			      )
+			  END )AS BUILTUP_AREA_V2,
+       ( CASE
+			    WHEN LAND_AREA_V2=0
+			    THEN '-'
+			    ELSE LAND_AREA_V2
+			      ||' '
+			      ||
+			      (SELECT entry_name
+			      FROM common_code_category_entry
+			      WHERE entry_code=LAND_AREA_UOM_V2 and  active_status='1'
+			      )
+			  END )AS LAND_AREA_V2,
+      LAND_VALUE_IRB_V2,
+      BUILDING_VALUE_IRB_V2,
+      RECONSTRUCTION_VALUE_IRB_V2
+    FROM CMS_PROPERTY_VAL2
+    )
+  WHERE rnk&lt;
+  =3
+  ),
+  t_valuation_3
+AS
+  (SELECT *
+  FROM
+    (SELECT ROW_NUMBER() OVER (PARTITION BY CMS_COLLATERAL_ID ORDER BY id DESC) rnk,
+      cms_collateral_id,
+      VAL_CREATION_DATE_V3,
+      TOTAL_PROPERTY_AMOUNT_V3,
+      VALUATOR_COMPANY_V3,
+      VALUATION_DATE_V3,
+			 ( CASE
+			    WHEN BUILTUP_AREA_V3=0
+			    THEN '-'
+			    ELSE BUILTUP_AREA_V3
+			      ||' '
+			      ||
+			      (SELECT entry_name
+			      FROM common_code_category_entry
+			      WHERE entry_code=BUILTUP_AREA_UOM_V3 and  active_status='1'
+			      )
+			  END )AS BUILTUP_AREA_V3,
+       ( CASE
+			    WHEN LAND_AREA_V3=0
+			    THEN '-'
+			    ELSE LAND_AREA_V3
+			      ||' '
+			      ||
+			      (SELECT entry_name
+			      FROM common_code_category_entry
+			      WHERE entry_code=LAND_AREA_UOM_V3 and  active_status='1'
+			      )
+			  END )AS LAND_AREA_V3,
+      LAND_VALUE_IRB_V3,
+      BUILDING_VALUE_IRB_V3,
+      RECONSTRUCTION_VALUE_IRB_V3
+    FROM CMS_PROPERTY_VAL3
+    )
+  WHERE rnk&lt;
+  =3
+  )
+SELECT DISTINCT(SEC.CMS_COLLATERAL_ID) AS SecurityID,
+  prop.DESCRIPTION_ASSET               AS Borrowers_Name,
+  prop.property_address
+  ||' '
+  ||prop.property_address_2
+  ||' '
+  ||prop.property_address_3
+  ||' '
+  ||prop.property_address_4
+  ||' '
+  ||prop.property_address_5
+  ||' '
+  ||prop.property_address_6 AS propertyaddress,
+  (SELECT r.country_name FROM cms_country r WHERE r.id= prop.country
+  ) AS country,
+  (SELECT state_name FROM cms_state r WHERE r.id= prop.state
+  ) AS state, --new
+  (SELECT city_name
+  FROM cms_city c
+  WHERE c.id= prop.nearest_city
+  )                 AS city,--new
+  prop.other_city   AS otherCity,
+  prop.pincode      AS pincode,--new
+  sp.lsp_le_id      AS partyId,
+  sp.lsp_short_name AS partyName,
+  -- sbb.SYSTEM_BANK_BRANCH_NAME AS VaultLocation,
+  (
+  SELECT entry_name
+  FROM t_entry_name
+  WHERE category_code = 'HDFC_SEGMENT'
+  AND entry_code      = sp.lsp_sgmnt_code_value
+  ) AS segment,
+  (SELECT region_name
+  FROM cms_region r
+  WHERE r.id= fnc_lra_region(sp.cms_le_main_profile_id)
+  ) AS cusRegion,
+  --reg.region_name             AS cusRegion,
+  (
+  SELECT region_name
+  FROM cms_region r
+  WHERE r.id= sp.rm_region
+  ) AS rmregion,--new
+  --(SELECT rm.rm_mgr_name FROM cms_relationship_mgr rm  WHERE rm.id=sp.relation_mgr ) AS rmregion,
+  rm.rm_mgr_name AS RMName,
+  (
+  CASE
+    WHEN sec.sec_priority ='Y'
+    THEN 'Primary'
+    WHEN sec.sec_priority ='N'
+    THEN 'Secondary'
+    ELSE '-'
+  END ) AS securityPriority,
+  (
+  CASE
+    WHEN sec.monitor_process ='Y'
+    THEN 'Yes'
+    WHEN sec.monitor_process ='N'
+    THEN 'No'
+    ELSE '-'
+  END ) AS monitorProcCol,
+  (SELECT ENTRY_NAME
+  FROM t_entry_name
+  WHERE category_code='FREQUENCY'
+    -- AND active_status  ='1'
+  AND entry_code = sec.monitor_frequency
+  )                           AS monitorProcColFreq,
+  sbb.SYSTEM_BANK_BRANCH_NAME AS VaultLocation,
+  sbb.custodian1              AS VaultCustodian1,
+  sbb.custodian2              AS VaultCustodian2,
+  (SELECT ENTRY_NAME
+  FROM t_entry_name
+  WHERE ENTRY_CODE = prop.margage_type
+    --AND active_status ='1'
+  AND CATEGORY_CODE = 'MORTGAGE_TYPE'
+  )                                              AS MORTGAGE_TYPE,
+  TO_CHAR(prop.SALE_PURCHASE_DATE,'DD/Mon/YYYY') AS DateOfMortgage,
+  COALESCE (
+  (SELECT BANK_NAME
+  FROM cms_other_bank
+  WHERE deprecated='N'
+  AND status      ='ACTIVE'
+  AND id          =prop.morgage_created_by
+  ),
+  (SELECT SYSTEM_BANK_NAME
+  FROM cms_system_bank
+  WHERE deprecated='N'
+  AND status      ='ACTIVE'
+  AND id          =prop.morgage_created_by
+  ))                           AS mortgageCreatedBy,
+  prop.mortage_registered_ref  AS mortgageRegdRef,
+  prop.developer_group_company AS propertyownername,
+  prop.property_id,
+  (SELECT ENTRY_NAME
+  FROM t_entry_name
+  WHERE category_code = 'PROPERTY_TYPE'
+    --AND active_status   ='1'
+  AND ENTRY_CODE = prop.property_type
+  )                                          AS property_type, --new
+  TO_CHAR(prop.valuation_date,'DD/MON/YYYY') AS ValuationDate, --new
+  (SELECT entry_name
+  FROM t_entry_name
+  WHERE entry_code =sec.reval_freq
+    --AND active_status='1'
+  )                                              AS revalFreq,
+  TO_CHAR(sec.next_valuation_date,'DD/MON/YYYY') AS nextValDate,
+  (SELECT entry_name
+  FROM t_entry_name
+  WHERE category_code = 'ADV_NAME'
+    --AND active_status   ='1'
+  AND entry_code = prop.advocate_lawyer_name
+  ) AS advocate_name,   --new
+  prop.remarks_property,--new
+  prop.lot_no AS LOTNo,
+  (
+  CASE
+    WHEN prop.is_phy_inspect ='Y' OR prop.is_phy_inspect = '1'
+    THEN 'Yes'
+    ELSE 'No'
+  END ) AS phyVerifOfCol,
+  -- prop.is_phy_inspect AS phyVerifOfCol,
+  (
+  SELECT ENTRY_NAME
+  FROM t_entry_name
+  WHERE category_code='FREQUENCY'
+    --AND active_status  ='1'
+  AND entry_code = prop.phy_inspect_freq_unit
+  )                                                  AS phyVerifOfColFreq,
+  TO_CHAR(prop.last_phy_inspect_date,'DD/MON/YYYY')  AS phyVerifDoneOn,
+  TO_CHAR(prop.next_phy_inspect_date ,'DD/MON/YYYY') AS nxtPhyVerifDueOn,
+  (
+  CASE
+    WHEN prop.claim ='Y'
+    THEN 'Yes'
+    WHEN prop.claim ='N'
+    THEN 'No'
+    ELSE '-'
+  END ) AS priorClaim,
+  (
+  CASE
+    WHEN prop.claim_type ='LITIGATION'
+    THEN 'Litigation'
+    WHEN prop.claim_type ='PROPERTY_TAX'
+    THEN 'Property Tax'
+    WHEN prop.claim_type ='OTHERS_CLAIM'
+    THEN 'Others'
+    ELSE '-'
+  END ) AS typeOfClaim,
+  (SELECT ENTRY_NAME
+  FROM t_entry_name
+  WHERE category_code='TYPE_CHARGE'
+    -- AND active_status  ='1'
+  AND entry_code = sec.change_type
+  ) AS typeOfCharge,
+  (
+  CASE
+    WHEN sec.other_bank_charge IS NULL
+    THEN '-'
+    WHEN sec.other_bank_charge IS NOT NULL
+    THEN sec.other_bank_charge
+      ||'%'
+  END ) AS pectFstChgByBank,
+  (
+  CASE
+    WHEN prop.env_risky_status ='Y'
+    THEN 'Yes'
+    WHEN prop.env_risky_status ='N'
+    THEN 'No'
+    WHEN prop.env_risky_status ='NA'
+    THEN 'Not Applicable'
+    ELSE '-'
+  END ) AS secEnvRisky,
+  TO_CHAR(prop.TSR_DATE,'DD/MON/YYYY') TSR_DATE,
+  (SELECT entry_name
+  FROM t_entry_name
+  WHERE category_code='FREQUENCY'
+  AND entry_code     =prop.TSR_FREQUENCY
+  ) TSR_freq,
+  TO_CHAR(prop.NEXT_TSR_DATE,'DD/MON/YYYY') NXT_TSR_DATE,
+  DECODE(prop.CERSIA_REG_DATE,NULL,NULL,TO_CHAR(prop.CERSIA_REG_DATE,'DD/MON/YYYY')) CERSIA_DATE,
+  TO_CHAR(curval1.VAL_CREATION_DATE_V1,'DD/MON/YYYY') VAL_CREATION_DATE_V1,
+  curval1.TOTAL_PROPERTY_AMOUNT_V1,
+  -- curval1.VALUATOR_COMPANY_V1,
+  (SELECT VALUATION_AGENCY_NAME
+  FROM CMS_VALUATION_AGENCY
+  WHERE id  =curval1.VALUATOR_COMPANY_V1
+  AND STATUS='ACTIVE'
+  ) AS VALUATOR_COMPANY_V1,
+  TO_CHAR(curval1.VALUATION_DATE_V1,'DD/MON/YYYY') VALUATION_DATE_V1,
+  curval1.BUILTUP_AREA_V1,
+  curval1.LAND_AREA_V1,
+  curval1.LAND_VALUE_IRB_V1,
+  curval1.BUILDING_VALUE_IRB_V1,
+  curval1.RECONSTRUCTION_VALUE_IRB_V1,
+  TO_CHAR(curval2.VAL_CREATION_DATE_V2,'DD/MON/YYYY') VAL_CREATION_DATE_V2,
+  curval2.TOTAL_PROPERTY_AMOUNT_V2,
+  --  curval2.VALUATOR_COMPANY_V2,
+  (
+  SELECT VALUATION_AGENCY_NAME
+  FROM CMS_VALUATION_AGENCY
+  WHERE id  = curval2.VALUATOR_COMPANY_V2
+  AND STATUS='ACTIVE'
+  ) AS VALUATOR_COMPANY_V2,
+  TO_CHAR(curval2.VALUATION_DATE_V2,'DD/MON/YYYY') VALUATION_DATE_V2,
+  curval2.BUILTUP_AREA_V2,
+  curval2.LAND_AREA_V2,
+  curval2.LAND_VALUE_IRB_V2,
+  curval2.BUILDING_VALUE_IRB_V2,
+  curval2.RECONSTRUCTION_VALUE_IRB_V2,
+  TO_CHAR(curval3.VAL_CREATION_DATE_V3,'DD/MON/YYYY') VAL_CREATION_DATE_V3,
+  curval3.TOTAL_PROPERTY_AMOUNT_V3,
+  --  curval3.VALUATOR_COMPANY_V3,
+  (
+  SELECT VALUATION_AGENCY_NAME
+  FROM CMS_VALUATION_AGENCY
+  WHERE id  = curval3.VALUATOR_COMPANY_V3
+  AND STATUS='ACTIVE'
+  ) AS VALUATOR_COMPANY_V3,
+  TO_CHAR(curval3.VALUATION_DATE_V3,'DD/MON/YYYY') VALUATION_DATE_V3,
+  curval3.BUILTUP_AREA_V3,
+  curval3.LAND_AREA_V3,
+  curval3.LAND_VALUE_IRB_V3,
+  curval3.BUILDING_VALUE_IRB_V3,
+  curval3.RECONSTRUCTION_VALUE_IRB_V3,
+  sec.CMV,
+  TO_CHAR(preval1.VAL_CREATION_DATE_V1,'DD/MON/YYYY') pre_VAL_CREATION_DATE_V1,
+  preval1.TOTAL_PROPERTY_AMOUNT_V1 pre_TOTAL_PROPERTY_AMOUNT_V1,
+  --  preval1.VALUATOR_COMPANY_V1 pre_VALUATOR_COMPANY_V1,
+  (
+  SELECT VALUATION_AGENCY_NAME
+  FROM CMS_VALUATION_AGENCY
+  WHERE id  = preval1.VALUATOR_COMPANY_V1
+  AND STATUS='ACTIVE'
+  ) AS pre_VALUATOR_COMPANY_V1,
+  TO_CHAR(preval1.VALUATION_DATE_V1,'DD/MON/YYYY') pre_VALUATION_DATE_V1,
+  preval1.BUILTUP_AREA_V1 pre_BUILTUP_AREA_V1,
+  preval1.LAND_AREA_V1 pre_LAND_AREA_V1,
+  preval1.LAND_VALUE_IRB_V1 pre_LAND_VALUE_IRB_V1,
+  preval1.BUILDING_VALUE_IRB_V1 pre_BUILDING_VALUE_IRB_V1,
+  preval1.RECONSTRUCTION_VALUE_IRB_V1 pre_RECONSTRUCTION_VALUE_IRB_V1,
+  TO_CHAR(preval2.VAL_CREATION_DATE_V2,'DD/MON/YYYY') pre_VAL_CREATION_DATE_V2,
+  preval2.TOTAL_PROPERTY_AMOUNT_V2 pre_TOTAL_PROPERTY_AMOUNT_V2,
+  --  preval2.VALUATOR_COMPANY_V2 pre_VALUATOR_COMPANY_V2,
+  (
+  SELECT VALUATION_AGENCY_NAME
+  FROM CMS_VALUATION_AGENCY
+  WHERE id  = preval2.VALUATOR_COMPANY_V2
+  AND STATUS='ACTIVE'
+  ) AS pre_VALUATOR_COMPANY_V2 ,
+  TO_CHAR(preval2.VALUATION_DATE_V2,'DD/MON/YYYY') pre_VALUATION_DATE_V2,
+  preval2.BUILTUP_AREA_V2 pre_BUILTUP_AREA_V2,
+  preval2.LAND_AREA_V2 pre_LAND_AREA_V2,
+  preval2.LAND_VALUE_IRB_V2 pre_LAND_VALUE_IRB_V2,
+  preval2.BUILDING_VALUE_IRB_V2 pre_BUILDING_VALUE_IRB_V2,
+  preval2.RECONSTRUCTION_VALUE_IRB_V2 pre_RECONSTRUCTION_VALUE_IRB_V2,
+  TO_CHAR(preval3.VAL_CREATION_DATE_V3,'DD/MON/YYYY') pre_VAL_CREATION_DATE_V3,
+  preval3.TOTAL_PROPERTY_AMOUNT_V3 pre_TOTAL_PROPERTY_AMOUNT_V3,
+  --  preval3.VALUATOR_COMPANY_V3 pre_VALUATOR_COMPANY_V3,
+  (
+  SELECT VALUATION_AGENCY_NAME
+  FROM CMS_VALUATION_AGENCY
+  WHERE id  = preval3.VALUATOR_COMPANY_V3
+  AND STATUS='ACTIVE'
+  ) pre_VALUATOR_COMPANY_V3,
+  TO_CHAR(preval3.VALUATION_DATE_V3,'DD/MON/YYYY') pre_VALUATION_DATE_V3,
+  preval3.BUILTUP_AREA_V3 pre_BUILTUP_AREA_V3,
+  preval3.LAND_AREA_V3 pre_LAND_AREA_V3,
+  preval3.LAND_VALUE_IRB_V3 pre_LAND_VALUE_IRB_V3,
+  preval3.BUILDING_VALUE_IRB_V3 pre_BUILDING_VALUE_IRB_V3,
+  preval3.RECONSTRUCTION_VALUE_IRB_V3 pre_RECONSTRUCTION_VALUE_IRB_V3,
+  -- least(preval1.TOTAL_PROPERTY_AMOUNT_V1 , preval2.TOTAL_PROPERTY_AMOUNT_V2 , preval3.TOTAL_PROPERTY_AMOUNT_V3) pre_CMV,
+  LEAST(
+    COALESCE(preval1.TOTAL_PROPERTY_AMOUNT_V1, 
+             preval2.TOTAL_PROPERTY_AMOUNT_V2, 
+             preval3.TOTAL_PROPERTY_AMOUNT_V3),
+    COALESCE(preval2.TOTAL_PROPERTY_AMOUNT_V2, 
+             preval3.TOTAL_PROPERTY_AMOUNT_V3, 
+             preval1.TOTAL_PROPERTY_AMOUNT_V1),
+    COALESCE(preval3.TOTAL_PROPERTY_AMOUNT_V3, 
+             preval1.TOTAL_PROPERTY_AMOUNT_V1, 
+             preval2.TOTAL_PROPERTY_AMOUNT_V2)
+) pre_CMV,
+  
+  TO_CHAR(pre2preval1.VAL_CREATION_DATE_V1,'DD/MON/YYYY') pre2pre_VAL_CREATION_DATE_V1,
+  pre2preval1.TOTAL_PROPERTY_AMOUNT_V1 pre2pre_TOTAL_PROPERTY_AMOUNT_V1,
+  --  pre2preval1.VALUATOR_COMPANY_V1 pre2pre_VALUATOR_COMPANY_V1,
+  (
+  SELECT VALUATION_AGENCY_NAME
+  FROM CMS_VALUATION_AGENCY
+  WHERE id  = pre2preval1.VALUATOR_COMPANY_V1
+  AND STATUS='ACTIVE'
+  ) AS pre2pre_VALUATOR_COMPANY_V1,
+  TO_CHAR(pre2preval1.VALUATION_DATE_V1,'DD/MON/YYYY') pre2pre_VALUATION_DATE_V1,
+  pre2preval1.BUILTUP_AREA_V1 pre2pre_BUILTUP_AREA_V1,
+  pre2preval1.LAND_AREA_V1 pre2pre_LAND_AREA_V1,
+  pre2preval1.LAND_VALUE_IRB_V1 pre2pre_LAND_VALUE_IRB_V1,
+  pre2preval1.BUILDING_VALUE_IRB_V1 pre2pre_BUILDING_VALUE_IRB_V1,
+  pre2preval1.RECONSTRUCTION_VALUE_IRB_V1 pre2pre_RECONSTRUCTION_VALUE_IRB_V1,
+  TO_CHAR(pre2preval2.VAL_CREATION_DATE_V2,'DD/MON/YYYY') pre2pre_VAL_CREATION_DATE_V2,
+  pre2preval2.TOTAL_PROPERTY_AMOUNT_V2 pre2pre_TOTAL_PROPERTY_AMOUNT_V2,
+  --  pre2preval2.VALUATOR_COMPANY_V2 pre2pre_VALUATOR_COMPANY_V2,
+  (
+  SELECT VALUATION_AGENCY_NAME
+  FROM CMS_VALUATION_AGENCY
+  WHERE id  = pre2preval2.VALUATOR_COMPANY_V2
+  AND STATUS='ACTIVE'
+  ) AS pre2pre_VALUATOR_COMPANY_V2,
+  TO_CHAR(pre2preval2.VALUATION_DATE_V2,'DD/MON/YYYY') pre2pre_VALUATION_DATE_V2,
+  pre2preval2.BUILTUP_AREA_V2 pre2pre_BUILTUP_AREA_V2,
+  pre2preval2.LAND_AREA_V2 pre2pre_LAND_AREA_V2,
+  pre2preval2.LAND_VALUE_IRB_V2 pre2pre_LAND_VALUE_IRB_V2,
+  pre2preval2.BUILDING_VALUE_IRB_V2 pre2pre_BUILDING_VALUE_IRB_V2,
+  pre2preval2.RECONSTRUCTION_VALUE_IRB_V2 pre2pre_RECONSTRUCTION_VALUE_IRB_V2,
+  TO_CHAR(pre2preval3.VAL_CREATION_DATE_V3,'DD/MON/YYYY') pre2pre_VAL_CREATION_DATE_V3,
+  pre2preval3.TOTAL_PROPERTY_AMOUNT_V3 pre2pre_TOTAL_PROPERTY_AMOUNT_V3,
+  --  pre2preval3.VALUATOR_COMPANY_V3 pre2pre_VALUATOR_COMPANY_V3,
+  (
+  SELECT VALUATION_AGENCY_NAME
+  FROM CMS_VALUATION_AGENCY
+  WHERE id  = pre2preval3.VALUATOR_COMPANY_V3
+  AND STATUS='ACTIVE'
+  ) AS pre2pre_VALUATOR_COMPANY_V3 ,
+  TO_CHAR(pre2preval3.VALUATION_DATE_V3,'DD/MON/YYYY') pre2pre_VALUATION_DATE_V3,
+  pre2preval3.BUILTUP_AREA_V3 pre2pre_BUILTUP_AREA_V3,
+  pre2preval3.LAND_AREA_V3 pre2pre_LAND_AREA_V3,
+  pre2preval3.LAND_VALUE_IRB_V3 pre2pre_LAND_VALUE_IRB_V3,
+  pre2preval3.BUILDING_VALUE_IRB_V3 pre2pre_BUILDING_VALUE_IRB_V3,
+  pre2preval3.RECONSTRUCTION_VALUE_IRB_V3 pre2pre_RECONSTRUCTION_VALUE_IRB_V3,
+--  least(pre2preval1.TOTAL_PROPERTY_AMOUNT_V1, pre2preval2.TOTAL_PROPERTY_AMOUNT_V2, pre2preval3.TOTAL_PROPERTY_AMOUNT_V3) pre2pre_CMV,
+  LEAST(
+    COALESCE(pre2preval1.TOTAL_PROPERTY_AMOUNT_V1, 
+             pre2preval2.TOTAL_PROPERTY_AMOUNT_V2, 
+             pre2preval3.TOTAL_PROPERTY_AMOUNT_V3),
+    COALESCE(pre2preval2.TOTAL_PROPERTY_AMOUNT_V2, 
+             pre2preval3.TOTAL_PROPERTY_AMOUNT_V3, 
+             pre2preval1.TOTAL_PROPERTY_AMOUNT_V1),
+    COALESCE(pre2preval3.TOTAL_PROPERTY_AMOUNT_V3, 
+             pre2preval1.TOTAL_PROPERTY_AMOUNT_V1, 
+             pre2preval2.TOTAL_PROPERTY_AMOUNT_V2)
+) pre2pre_CMV,
+
+  TO_CHAR(prop.LEGALAUDITDATE,'DD/MON/YYYY') LEGALAUDITDATE,
+  TO_CHAR(prop.INTERVEINGPERISEARCHDATE,'DD/MON/YYYY') INTERVEINGPERISEARCHDATE,
+  prop.SALE_PURCHASE_VALUE
+FROM SCI_LE_SUB_PROFILE sp
+INNER JOIN cms_relationship_mgr rm
+ON rm.id=sp.relation_mgr
+INNER JOIN SCI_LSP_LMT_PROFILE pf
+ON sp.cms_le_sub_profile_id = pf.cms_customer_id
+INNER JOIN SCI_LSP_APPR_LMTS lmts
+ON pf.cms_lsp_lmt_profile_id = lmts.CMS_LIMIT_PROFILE_ID
+INNER JOIN CMS_LIMIT_SECURITY_MAP lsm
+ON lmts.cms_lsp_appr_lmts_id = lsm.cms_lsp_appr_lmts_id
+INNER JOIN CMS_SECURITY sec
+ON SEC.CMS_COLLATERAL_ID = LSM.CMS_COLLATERAL_ID
+INNER JOIN CMS_PROPERTY prop
+ON sec.cms_collateral_id = prop.cms_collateral_id
+LEFT JOIN t_valuation_1 curval1
+ON prop.cms_collateral_id=curval1.cms_collateral_id
+AND curval1.rnk          =1
+LEFT JOIN t_valuation_1 preval1
+ON prop.cms_collateral_id=preval1.cms_collateral_id
+AND preval1.rnk          =2
+LEFT JOIN t_valuation_1 pre2preval1
+ON prop.cms_collateral_id=pre2preval1.cms_collateral_id
+AND pre2preval1.rnk      =3
+LEFT JOIN t_valuation_2 curval2
+ON prop.cms_collateral_id=curval2.cms_collateral_id
+AND curval2.rnk          =1
+LEFT JOIN t_valuation_2 preval2
+ON prop.cms_collateral_id=preval2.cms_collateral_id
+AND preval2.rnk          =2
+LEFT JOIN t_valuation_2 pre2preval2
+ON prop.cms_collateral_id=pre2preval2.cms_collateral_id
+AND pre2preval2.rnk      =3
+LEFT JOIN t_valuation_3 curval3
+ON prop.cms_collateral_id=curval3.cms_collateral_id
+AND curval3.rnk          =1
+LEFT JOIN t_valuation_3 preval3
+ON prop.cms_collateral_id=preval3.cms_collateral_id
+AND preval3.rnk          =2
+LEFT JOIN t_valuation_3 pre2preval3
+ON prop.cms_collateral_id=pre2preval3.cms_collateral_id
+AND pre2preval3.rnk      =3
+LEFT JOIN CMS_SYSTEM_BANK_BRANCH sbb
+ON sec.SECURITY_ORGANISATION = sbb.SYSTEM_BANK_BRANCH_CODE
+
+			</query>
+		<whereClause>
+			<mandatoryClause>
+                            sec.security_sub_type_id  = 'PT701'
+                           AND sp.status                != 'INACTIVE'
+                           AND lmts.cms_limit_status     != 'DELETED'
+                           AND nvl(lsm.update_status_ind,'D') != 'D'
+			</mandatoryClause>
+			<param>
+				<name>relationManager</name>
+				<condition> and rm.id = </condition>
+			</param>
+			<param>
+				<name>party</name>
+				<condition> and sp.cms_le_sub_profile_id =  </condition>
+			</param>
+			<param>
+				<name>segment</name>
+				<condition> AND sp.LSP_SGMNT_CODE_value =  </condition>
+			</param>			
+					
+		</whereClause>
+		
+		<reportParamters>
+			<reportColumns>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Security ID</header><!-- 1 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Borrower’s Name</header><!-- 2 -->
+				</reportColumn>
+				<reportColumn>
+					<width>50</width>
+					<format>textFormat</format>
+					<header>Property Address</header><!-- 3 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Country</header><!-- 4 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>State</header><!-- 5 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>City</header><!-- 6 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Other City</header><!-- 7 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Pin Code</header><!-- 8 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Party ID</header><!-- 9 -->
+				</reportColumn>
+				<reportColumn>
+					<width>50</width>
+					<format>textFormat</format>
+					<header>Party Name</header><!-- 10 -->
+				</reportColumn>
+				<reportColumn>
+					<width>50</width>
+					<format>textFormat</format>
+					<header>Segment</header><!-- 11 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Customer Region</header><!-- 12 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>RM Region</header><!-- 13 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>RM Name</header><!-- 14 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Security Priority</header><!-- 15 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Monitoring Process Of Collateral's(Yes/No)</header><!-- 16 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Monitoring Process Of Collateral's Frequency</header><!-- 17 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Vault Location</header><!-- 18 -->
+				</reportColumn>				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Vault Custodian 1</header><!-- 19 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Vault Custodian 2</header><!-- 20 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Type Of Mortgage</header><!-- 21 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Date Of Mortgage</header><!-- 22 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Mortgage Created By</header><!-- 23 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Mortgage Registered Reference</header><!-- 24 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Property Owner Name</header><!-- 25 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Property Id</header><!-- 26 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Property Type</header><!-- 27 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Valuation Date</header><!-- 28 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Revaluation Frequency</header><!-- 29 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Next Valuation Date</header><!-- 30 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Advocate/Lawyer Name</header><!-- 35 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Remarks</header><!-- 36 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Cersai ID</header><!-- 37 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Physical Verification Of Collateral(Yes/No)</header><!-- 38 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Physical Verification Of Collateral Frequency</header><!-- 39 -->
+				</reportColumn>	
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Physical Verification Done On</header><!-- 40 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Next Physical Verification Due On</header><!-- 41 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Prior Claim</header><!-- 42 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Type Of Claim</header><!-- 43 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Type Of Charge</header><!-- 44 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>% Of First Charge By Other Bank</header><!-- 45 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Security Environmentally Risk</header><!-- 46 -->
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Date of TSR</header><!-- 47 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>TSR Frequency</header><!-- 48 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Next TSR Date</header><!-- 49 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Date of CERSAI Registration</header><!-- 50 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 1 - Revaluation</header><!-- 51 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 1 - Total Property Amount</header><!-- 52 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 1 -Valuation Company</header><!-- 53 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 1 -Valuation Date</header><!-- 54 -->
+				</reportColumn>				
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 1 -Built-up Area</header><!-- 55 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 1 - Land Area</header><!-- 56 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 1 - Land Value</header><!-- 57 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 1 -Building Value</header><!-- 58 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 1 -Reconstruction Value</header><!-- 59 -->
+				</reportColumn>
+								
+					<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 2 - Revaluation</header><!-- 60 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 2 - Total Property Amount</header><!-- 61 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 2 -Valuation Company</header><!-- 61 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 2 -Valuation Date</header><!-- 62 -->
+				</reportColumn>				
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 2 -Built-up Area</header><!-- 63 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 2 - Land Area</header><!-- 64 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 2 - Land Value</header><!-- 65 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 2 -Building Value</header><!-- 66 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 2 -Reconstruction Value</header><!-- 67 -->
+				</reportColumn>
+				
+								<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 3 - Revaluation</header><!-- 68 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 3 - Total Property Amount</header><!-- 69 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 3 -Valuation Company</header><!-- 70 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 3 -Valuation Date</header><!-- 71 -->
+				</reportColumn>				
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 3 -Built-up Area</header><!-- 72 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 3 - Land Area</header><!--  -73-->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 3 - Land Value</header><!-- 74 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 3 -Building Value</header><!-- 75 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current  Valuation 3 -Reconstruction Value</header><!-- 76 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Current Security OMV</header><!-- 77 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 1- Revaluation</header><!-- 78 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 1- Total Property Amount</header><!-- 79 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 1-Valuation Company</header><!-- 80 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 1-Valuation Date</header><!-- 81 -->
+				</reportColumn>				
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 1-Built-up Area</header><!-- 82 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 1- Land Area</header><!-- 83 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 1- Land Value</header><!-- 84 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 1-Building Value</header><!-- 85 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 1-Reconstruction Value</header><!-- 86 -->
+				</reportColumn>
+								
+					<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 2 - Revaluation</header><!-- 87 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 2 - Total Property Amount</header><!-- 88 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 2 -Valuation Company</header><!-- 89 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 2 -Valuation Date</header><!-- 90 -->
+				</reportColumn>				
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 2 -Built-up Area</header><!-- 91 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 2 - Land Area</header><!-- 92 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 2 - Land Value</header><!-- 93 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 2 -Building Value</header><!-- 94 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 2 -Reconstruction Value</header><!-- 95 -->
+				</reportColumn>
+				
+								<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 3 - Revaluation</header><!-- 96 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 3 - Total Property Amount</header><!-- 97 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 3 -Valuation Company</header><!-- 98 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 3 -Valuation Date</header><!-- 99 -->
+				</reportColumn>				
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 3 -Built-up Area</header><!-- 100 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 3 - Land Area</header><!--  -101 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 3 - Land Value</header><!-- 102 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 3 -Building Value</header><!-- 103 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous  Valuation 3 -Reconstruction Value</header><!-- 104 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous Security OMV</header><!-- 105 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 1- Revaluation</header><!-- 106 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 1- Total Property Amount</header><!-- 107 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 1-Valuation Company</header><!-- 108 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 1-Valuation Date</header><!-- 109 -->
+				</reportColumn>				
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 1-Built-up Area</header><!-- 110 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 1- Land Area</header><!-- 111 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 1- Land Value</header><!-- 112 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 1-Building Value</header><!-- 113 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 1-Reconstruction Value</header><!-- 114 -->
+				</reportColumn>
+								
+					<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 2 - Revaluation</header><!-- 115 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 2 - Total Property Amount</header><!-- 116 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 2 -Valuation Company</header><!-- 117 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 2 -Valuation Date</header><!-- 118 -->
+				</reportColumn>				
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 2 -Built-up Area</header><!-- 119 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 2 - Land Area</header><!-- 120 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 2 - Land Value</header><!-- 121 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 2 -Building Value</header><!-- 122 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 2 -Reconstruction Value</header><!-- 123 -->
+				</reportColumn>
+				
+								<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 3 - Revaluation</header><!-- 124 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 3 - Total Property Amount</header><!-- 125 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 3 -Valuation Company</header><!-- 126 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 3 -Valuation Date</header><!-- 127 -->
+				</reportColumn>				
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 3 -Built-up Area</header><!-- 128 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 3 - Land Area</header><!--  -129-->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 3 - Land Value</header><!-- 130 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 3 -Building Value</header><!-- 131 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous Valuation 3 -Reconstruction Value</header><!-- 132 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Previous to previous -Security OMV</header><!-- 133 -->
+				</reportColumn>
+			
+							<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Legal Audit date</header><!-- 134 -->
+				</reportColumn>
+								
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Intervening period Search Date</header><!-- 135 -->
+				</reportColumn>
+				
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>Facility / Secured Amount</header><!-- 136 -->
+				</reportColumn>	
+												
+			</reportColumns>
+			
+			<reportName>Customer wise Property Master</reportName>
+		</reportParamters>
+	</report>
+</reports>

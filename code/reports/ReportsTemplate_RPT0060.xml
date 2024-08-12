@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reports>
+	<report>
+		<query>
+			SELECT DISTINCT FCUBS.PARTYID ,
+			FCUBS.PARTYNAME ,
+			FCUBS.FILENAME ,
+			FCUBS.SOURCE_REF_NO ,
+			FCUBS.LIAB_ID ,
+			FCUBS.LINENO ,
+			FCUBS.SERIALNO ,
+			FCUBS.LIAB_BRANCH ,
+			FCUBS.CURRENCY ,
+			FCUBS.LIMITAMOUNT ,
+			FCUBS.TENOR ,
+			TO_CHAR(FCUBS.STARTDATE,'DD/MON/YYYY') AS STARTDATE,
+			TO_CHAR(FCUBS.EXPIRYDATE,'DD/MON/YYYY') AS EXPIRYDATE,
+			FCUBS.ACTION,
+            TO_CHAR(CAST(FCUBS.REQUESTDATE AS TIMESTAMP), 'DD/MON/YYYY HH:MI:SS AM') AS REQUESTDATE,
+            TO_CHAR(CAST(FCUBS.RESPONSEDATE AS TIMESTAMP), 'DD/MON/YYYY HH:MI:SS AM') AS RESPONSEDATE,
+			FCUBS.STATUS,
+			FCUBS.ERRORCODE,
+			FCUBS.ERRORDESC,
+			FCUBS.MAKER_ID,                                   
+  			CASE WHEN FCUBS.MAKER_ID='SYSTEM' THEN 'SYSTEM'
+            ELSE
+            FCUBS.CHECKER_ID END AS CHECKER_ID,
+  			TO_CHAR(CAST(FCUBS.MAKER_DATETIME AS TIMESTAMP), 'DD/MON/YYYY HH:MI:SS AM') AS MAKER_DATETIME,
+            TO_CHAR(CAST(FCUBS.CHECKER_DATETIME AS TIMESTAMP), 'DD/MON/YYYY HH:MI:SS AM') AS CHECKER_DATETIME,
+			CASE
+			WHEN SUB.LSP_SGMNT_CODE_VALUE = COMMON.ENTRY_CODE
+			THEN COMMON.ENTRY_NAME
+			END AS SEGMENT,
+			FCUBS.STOCK_DOC_MONTH_YEAR AS STOCK_DATE
+			FROM CMS_FCUBSDATA_LOG FCUBS,
+			SCI_LE_SUB_PROFILE SUB INNER JOIN
+			COMMON_CODE_CATEGORY_ENTRY COMMON ON SUB.LSP_SGMNT_CODE_VALUE = COMMON.ENTRY_CODE
+		</query>
+		<whereClause>
+			<mandatoryClause>
+				SUB.LSP_LE_ID = FCUBS.PARTYID
+				AND COMMON.CATEGORY_CODE = 'HDFC_SEGMENT'
+			</mandatoryClause>
+			<param>
+				<name>recordType</name>
+				<condition> AND FCUBS.STATUS = </condition>
+			</param>
+			<param>
+				<name>party</name>
+				<condition> AND FCUBS.PARTYID = </condition>
+			</param>
+			<param>
+				<name>fromDate</name>
+				<condition> AND TRUNC(FCUBS.REQUESTDATE) BETWEEN </condition>
+			</param>
+			<param>
+				<name>toDate</name>
+				<condition> AND </condition>
+			</param>
+		</whereClause>
+		<reportParamters>
+			<reportColumns>
+				<reportColumn>
+					<width>50</width>
+					<format>textFormat</format>
+					<header>PARTY ID</header>
+				</reportColumn>
+				<reportColumn>
+					<width>2000</width>
+					<format>textFormat</format>
+					<header>PARTY NAME</header>
+				</reportColumn>
+				<reportColumn>
+					<width>50</width>
+					<format>textFormat</format>
+					<header>FILE NAME</header>
+				</reportColumn>
+				<reportColumn>
+					<width>50</width>
+					<format>textFormat</format>
+					<header>SOURCE SEQUENCE NUMBER</header>
+				</reportColumn>
+				<reportColumn>
+					<width>50</width>
+					<format>textFormat</format>
+					<header>LIABILITY ID</header>
+				</reportColumn>
+				<reportColumn>
+					<width>300</width>
+					<format>textFormat</format>
+					<header>LINE CODE</header>
+				</reportColumn>
+				<reportColumn>
+					<width>20</width>
+					<format>textFormat</format>
+					<header>SERIAL NUMBER</header>
+				</reportColumn>
+				<reportColumn>
+					<width>50</width>
+					<format>textFormat</format>
+					<header>LIABILITY BRANCH</header>
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>LIMIT LINE CURRENCY</header>
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>amountFormat</format>
+					<header>LIMIT AMOUNT</header>
+				</reportColumn>
+				<reportColumn>
+					<width>50</width>
+					<format>textFormat</format>
+					<header>TENOR</header>
+				</reportColumn>
+				<reportColumn>
+					<width>9</width>
+					<format>textFormat</format>
+					<header>START DATE</header>
+				</reportColumn>
+				<reportColumn>
+					<width>9</width>
+					<format>textFormat</format>
+					<header>EXPIRY DATE</header>
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>ACTION</header>
+				</reportColumn>
+				<reportColumn>
+					<width>9</width>
+					<format>textFormat</format>
+					<header>REQUEST DATE/TIME</header>
+				</reportColumn>
+				<reportColumn>
+					<width>9</width>
+					<format>textFormat</format>
+					<header>RESPONSE DATE/TIME</header>
+				</reportColumn>
+				<reportColumn>
+					<width>25</width>
+					<format>textFormat</format>
+					<header>STATUS</header>
+				</reportColumn>
+				<reportColumn>
+					<width>500</width>
+					<format>textFormat</format>
+					<header>ERROR CODE</header>
+				</reportColumn>
+				<reportColumn>
+					<width>500</width>
+					<format>textFormat</format>
+					<header>ERROR DESCRIPTION</header>
+				</reportColumn>
+				<reportColumn>
+					<width>500</width>
+					<format>textFormat</format>
+					<header>MAKER ID</header>
+				</reportColumn>
+				<reportColumn>
+					<width>500</width>
+					<format>textFormat</format>
+					<header>CHECKER ID</header>
+				</reportColumn>
+				<reportColumn>
+					<width>500</width>
+					<format>textFormat</format>
+					<header>MAKER DATETIME</header>
+				</reportColumn>
+				<reportColumn>
+					<width>500</width>
+					<format>textFormat</format>
+					<header>CHECKER DATETIME</header>
+				</reportColumn>
+				<reportColumn>
+					<width>500</width>
+					<format>textFormat</format>
+					<header>SEGMENT</header>
+				</reportColumn>
+				<reportColumn>
+					<width>20</width>
+					<format>textFormat</format>
+					<header>STOCK DATE</header>
+				</reportColumn>
+			</reportColumns>
+			<reportName>Success/Reject/Summary Report of UBS-FCC</reportName>
+		</reportParamters>
+	</report>
+</reports>

@@ -1,0 +1,7 @@
+organization=amitsargar
+projectKey=AmitSargaras_Code.tar
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.56246
+dashboardUrl=https://sonarcloud.io/dashboard?id=AmitSargaras_Code.tar
+ceTaskId=AZFFdmUZYtkFBkV9RIuA
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZFFdmUZYtkFBkV9RIuA
